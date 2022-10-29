@@ -39,7 +39,18 @@ class HomeController extends Controller
         ->where('status', 1)
         ->orderBy('updated_at', 'DESC')
         ->get();
-        return view('home', ['memos' => $memos]);
+
+        $tags = Tag::where('user_id', $user['id'])
+        ->orderBy('updated_at', 'DESC')
+        ->get();
+
+        return view(
+            'home',
+            [
+                'memos' => $memos,
+                'tags' => $tags,
+            ]
+        );
     }
 
     public function create()
@@ -57,38 +68,95 @@ class HomeController extends Controller
         ->orderBy('updated_at', 'DESC')
         ->get();
 
+        $tags = Tag::where('user_id', $user['id'])
+        ->orderBy('updated_at', 'DESC')
+        ->get();
+
         return view(
             'create',
-            ['memos' => $memos, 'user' => $user]
+            [
+                'memos' => $memos,
+                'user' => $user,
+                'tags' => $tags,
+            ]
         );
     }
 
     public function store(Request $request)
     {
         $data = $request->all();
-         //dd($data);
+         
         // POSTされたデータをDB（memosテーブル）に挿入
         // MEMOモデルにDBへ保存する命令を出す
 
         // 同じタグがあるか確認
-        //$exist_tag = Tag::where('name', $data['tag'])->where('user_id', $data['user_id'])->first();
-        //if( empty($exist_tag['id']) ){
+        $exist_tag = Tag::where('name', $data['tag'])->where('user_id', $data['user_id'])->first();
+        if( empty($exist_tag['id']) ){
             //先にタグをインサート
-            //$tag_id = Tag::insertGetId(['name' => $data['tag'], 'user_id' => $data['user_id']]);
-        //}else{
-            //$tag_id = $exist_tag['id'];
-        //}
+            $tag_id = Tag::insertGetId(['name' => $data['tag'], 'user_id' => $data['user_id']]);
+        }else{
+            $tag_id = $exist_tag['id'];
+        }
 
         //タグのIDが判明する
         // タグIDをmemosテーブルに入れてあげる
         $memo_id = Memo::insertGetId([
             'content' => $data['content'],
              'user_id' => $data['user_id'], 
-             //'tag_id' => $tag_id,
+             'tag_id' => $tag_id,
              'status' => 1
         ]);
         
         // リダイレクト処理
         return redirect()->route('home');
+    }
+
+    public function edit($memo_id)
+    {
+        $user = Auth::user();
+        $memos = Memo::where('user_id', $user['id'])
+        ->where('status', 1)
+        ->orderBy('updated_at', 'DESC')
+        ->get();
+
+        $tags = Tag::where('user_id', $user['id'])
+        ->orderBy('updated_at', 'DESC')
+        ->get();
+
+        $memo = Memo::where('id', $memo_id)
+        ->where('user_id', $user['id'])
+        ->first();
+
+        return view('edit',
+            [
+                'memo' => $memo,
+                'memos' => $memos,
+                'tags' => $tags,
+                'user' => $user,
+            ]
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $inputs = $request->all();
+
+        Memo::where('id', $id)
+        ->update([
+            'content' => $inputs['content'],
+            'tag_id' => $inputs['tag_id']
+        ]);
+
+        return redirect()->route('home');
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $inputs = $request->all();
+        
+        //論理削除
+        Memo::where('id', $id)->update(['status' => 2]);
+        
+        return redirect()->route('home')->with('success', 'メモの削除が完了しました！');
     }
 }

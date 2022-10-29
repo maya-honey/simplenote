@@ -14,6 +14,7 @@ return new class extends Migration
      */
     public function up()
     {
+        //createはテーブルの内容を作成する時に使用
         Schema::create('memos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('content');

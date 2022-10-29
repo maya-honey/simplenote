@@ -35,3 +35,17 @@ Route::post(
     [App\Http\Controllers\HomeController::class, 'store']
 )->name('store');
 
+Route::get(
+    '/edit/{memo_id}',
+    [App\Http\Controllers\Homecontroller::class, 'edit']
+)->name('edit');
+
+Route::post(
+    '/update/{id}',
+    [App\Http\Controllers\Homecontroller::class, 'update']
+)->name('update');
+
+Route::post(
+    '/delete/{id}',
+    [App\Http\Controllers\Homecontroller::class, 'delete']
+)->name('delete');
