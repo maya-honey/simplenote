@@ -13,39 +13,43 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
-Route::get(
-    '/home',
-    [App\Http\Controllers\HomeController::class, 'index']
-)->name('home');
+Route::group(['middleware' => 'auth'], function(){
 
-Route::get(
-    '/create',
-     [App\Http\Controllers\HomeController::class, 'create']
-)->name('create');
+    Route::get(
+        '/',
+        [App\Http\Controllers\HomeController::class, 'index']
+    )->name('index');
 
-Route::post(
-    '/store',
-    [App\Http\Controllers\HomeController::class, 'store']
-)->name('store');
+    Route::get(
+        '/home',
+        [App\Http\Controllers\HomeController::class, 'index']
+    )->name('home');
 
-Route::get(
-    '/edit/{memo_id}',
-    [App\Http\Controllers\Homecontroller::class, 'edit']
-)->name('edit');
+    Route::get(
+        '/create',
+        [App\Http\Controllers\HomeController::class, 'create']
+    )->name('create');
 
-Route::post(
-    '/update/{id}',
-    [App\Http\Controllers\Homecontroller::class, 'update']
-)->name('update');
+    Route::post(
+        '/store',
+        [App\Http\Controllers\HomeController::class, 'store']
+    )->name('store');
 
-Route::post(
-    '/delete/{id}',
-    [App\Http\Controllers\Homecontroller::class, 'delete']
-)->name('delete');
+    Route::get(
+        '/edit/{memo_id}',
+        [App\Http\Controllers\Homecontroller::class, 'edit']
+    )->name('edit');
+
+    Route::post(
+        '/update/{id}',
+        [App\Http\Controllers\Homecontroller::class, 'update']
+    )->name('update');
+
+    Route::post(
+        '/delete/{id}',
+        [App\Http\Controllers\Homecontroller::class, 'delete']
+    )->name('delete');
+
+});

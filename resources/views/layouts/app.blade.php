@@ -15,6 +15,8 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    
+    <script src="https://kit.fontawesome.com/c47c0863e0.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="app">
@@ -30,9 +32,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-                        <li>
-                            <a href="/create">create</a>
-                        </li>
+                        
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -87,7 +87,7 @@
                         <div class="card-body py-2 px-4">
                             <a class='d-block' href='/'>全て表示</a>
                             @foreach($tags as $tag)
-                                <a href="" class='d-block'>
+                                <a href="/?tag={{ $tag['name'] }}" class='d-block'>
                                     {{ $tag['name'] }}
                                 </a>
                             @endforeach
